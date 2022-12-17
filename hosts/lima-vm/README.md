@@ -1,14 +1,11 @@
 
 
 ```
-nix build .#box
+nix build .
 
 nix run github:nix-community/nixos-generators -- -f raw-efi -c configuration.nix
 
-
-limactl delete -f default
-
-limactl start --name=default aarch64.yml
+limactl start --name=nixos aarch64.yml
 
 
 ```

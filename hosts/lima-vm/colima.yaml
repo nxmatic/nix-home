@@ -2,9 +2,9 @@
  arch: "aarch64"
 
 images:
-  - location: "./imgs/nixos-aarch64.img"
+  - location: ".local/nixos-aarch64.img"
     arch: "aarch64"
-  - location: "./imgs/nixos-x86.img"
+  - location: ".local/nixos-x86.img"
     arch: "x86_64"
 
 

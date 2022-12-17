@@ -4,7 +4,11 @@ let
     LIMA_CIDATA_MNT = "/mnt/lima-cidata";  # FIXME: hardcoded
     LIMA_CIDATA_DEV = "/dev/disk/by-label/cidata";  # FIXME: hardcoded
 
+    self_path = "./.";
+      
     script = ''
+    set -eux
+    exec &> >(tee -a /var/log/lima-init.log)
     echo "attempting to fetch configuration from LIMA user data..."
     export HOME=/root
     export PATH=${pkgs.lib.makeBinPath [ pkgs.gnused config.nix.package config.system.build.nixos-rebuild]}:$PATH
@@ -17,15 +21,13 @@ let
         exit 2
     fi
 
-    cp -f ${./configuration.nix} /etc/nixos/configuration.nix
-    cp -f ${./lima-init.nix} /etc/nixos/lima-init.nix
-    cp -f ${./lima-runtime.nix} /etc/nixos/lima-runtime.nix
-    chmod 664 /etc/nixos/configuration.nix
-    chmod 664 /etc/nixos/lima-init.nix
-    chmod 664 /etc/nixos/lima-runtime.nix
+    cp -f ${self_path}/*.nix /etc/nixos && \
+       chmod 664 /etc/nixos/*.nix
+
     sed -i 's@imports = \[];@imports = \[ "/etc/nixos/lima-runtime.nix" ];@g' /etc/nixos/lima-init.nix
 
     nixos-rebuild switch
+    nix-store --query --requisites /run/current-system | cut -d- -f2- | sort | uniq
 
     cp "${LIMA_CIDATA_MNT}"/meta-data /run/lima-ssh-ready
     cp "${LIMA_CIDATA_MNT}"/meta-data /run/lima-boot-done
@@ -33,6 +35,11 @@ let
     '';
 in {
     imports = [];  # PLACE HOLDER #
+
+    environment.systemPackages = with pkgs; [
+      emacs-nox # optional 
+      hostctl
+    ];
 
     systemd.services.lima-init = {
       inherit script;
