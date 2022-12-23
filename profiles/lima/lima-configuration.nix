@@ -1,5 +1,14 @@
-{ pkgs, ... }:
+{ config,  ... }:
 {
+  # nix cli settings
+  nix.settings = {
+    experimental-features = [ 
+      "nix-command" 
+      "flakes"
+    ];
+  };
+
+  # virtualisation
   virtualisation = {
     podman = {
       enable = true;
@@ -11,4 +20,11 @@
       defaultNetwork.dnsname.enable = true;
     };
   };
+
+  # documentation
+  documentation = {
+    enable = true;
+    doc.enable = true;
+  };
+
 }

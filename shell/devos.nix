@@ -7,6 +7,7 @@
 }: let
   inherit
     (pkgs)
+    just
     agenix
     cachix
     editorconfig-checker

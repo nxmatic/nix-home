@@ -3,13 +3,23 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }: let
   inherit (lib) fileContents;
   inherit (pkgs.stdenv.hostPlatform) isDarwin;
 in {
-  # Sets nrdxp.cachix.org binary cache which just speeds up some builds
-  imports = [../cachix];
+
+  imports = [
+    # Sets nrdxp.cachix.org binary cache which just speeds up some builds
+    ../cachix
+    # serial and network console login
+    ./console.nix
+  ];
+
+  system = {
+    stateVersion = "22.11";
+  };
 
   environment = {
     # Selection of sysadmin tools that can come in handy
@@ -90,14 +100,20 @@ in {
   fonts.fonts = with pkgs; [powerline-fonts dejavu_fonts];
 
   nix = {
+    # use nix-dram, a patched nix command, see: https://github.com/dramforever/nix-dram
+    # package = inputs.nix-dram.packages.${pkgs.system}.nix-dram;
+
     # Improve nix store disk usage
     gc.automatic = true;
 
-    # Prevents impurities in builds
-    useSandbox = true;
+    settings = {
+      # Prevents impurities in builds
+      sandbox = true;
 
-    # Give root user and wheel group special Nix privileges.
-    trustedUsers = ["root" "@wheel"];
+      # Give root user and wheel group special Nix privileges.
+      trusted-users = ["root" "@wheel"];
+    };
+
 
     # Generally useful nix option defaults
     extraOptions = ''
@@ -105,6 +121,8 @@ in {
       keep-outputs = true
       keep-derivations = true
       fallback = true
+      # used by nix-dram
+      # default-flake = flake:nixpkgs
     '';
   };
 }

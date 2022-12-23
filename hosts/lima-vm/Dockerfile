@@ -6,10 +6,12 @@ FROM $frombuild as ubuntu-nix
 # os 
 RUN <<!
     apt-get update -y
-    apt-get install -y libc6-i386 || true
-    apt-get install -y wget tar xz-utils
+    apt-get install -y tini libc6-i386 || true
+    apt-get install -y wget tar xz-utils openssh-server
     rm -rf /var/lib/apt/lists/*
 !
+
+ENTRYPOINT [ "/usr/bin/tini", "--", "sleep", "infinity" ]
 
 # nix install
 ARG NIX_VERSION=2.12.0
@@ -57,6 +59,7 @@ RUN <<EOS sed -e 's/^[[:space:]]\{4\}//' | bash
     nix-channel --add https://github.com/NixOS/nixpkgs/archive/master.tar.gz nixpkgs
     nix-channel --update
     nix-env --install nix
+    nix-env --install git
     nix-env --install rsync
     nix-env --delete-generations old
 EOS
@@ -67,6 +70,8 @@ RUN <<EOS sed -e 's/^[[:space:]]\{4\}//' | bash
     set -x
     nix-env --install emacs-nox
     nix-env --install yq
+    nix-env --install libguestfs
+    nix-env --install qemu
     nix-env --install guestfs-tools
 EOS
 

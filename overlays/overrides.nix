@@ -2,7 +2,7 @@ channels: final: prev: {
   __dontExport = true; # overrides clutter up actual creations
 
   inherit
-    (channels.latest)
+    (channels.nixos-unstable)
     cachix
     dhall
     discord
@@ -24,7 +24,7 @@ channels: final: prev: {
       in {
         # same for haskell packages, matching ghc versions
         inherit
-          (channels.latest.haskell.packages."ghc${version}")
+          (channels.nixos-unstable.haskell.packages."ghc${version}")
           haskell-language-server
           ;
       });

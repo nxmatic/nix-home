@@ -1,7 +1,13 @@
-{ config, modulesPath, pkgs, lib, ... }:
+{
+  config,
+  modulesPath,
+  pkgs,
+  lib,
+  ...
+}: let
+  cfg = config.lima-vm;
 
-let
-  LIMA_CIDATA_MNT = "/mnt/lima-cidata"; # FIXME: hardcoded
+  LIMA_CIDATA_MNT = cfg.cidata-mnt;
 
   # Nix can only natively “import” TOML, JSON and Nix. Nix lacks YAML support.
   # This has some drawbacks, mainly that yj needs to be available at evaluation time
@@ -82,43 +88,52 @@ in {
       '';
   };
 
-  systemd.services.lima-runtime-init = {
-    inherit script;
-    description = "Reconfigure the system from lima-runtime userdata on startup";
+  systemd = {
 
-    wantedBy = [ "multi-user.target" ];
-    after = [ "multi-user.target" ];
+    services = {
 
-    restartIfChanged = false;
-    unitConfig.X-StopOnRemoval = false;
+      lima-runtime-init = {
+        inherit script;
+        description = "Reconfigure the system from lima-runtime userdata on startup";
+        
+        wantedBy = [ "multi-user.target" ];
+        after = [ "multi-user.target" ];
+        
+        restartIfChanged = false;
+        unitConfig.X-StopOnRemoval = false;
+        
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+        };
+      };
 
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
+      lima-guestagent =  {
+        enable = true;
+        description = "Forward ports to the lima-hostagent";
+        wantedBy = [ "multi-user.target" ];
+        after = [ "network.target" ] ;
+        serviceConfig = {
+          Type = "simple";
+          ExecStart = "${/. + "${LIMA_CIDATA_MNT}/lima-guestagent"} daemon";
+          Restart = "on-failure";
+        };
+      };
+
     };
+
   };
 
-  systemd.services.lima-guestagent =  {
-    enable = true;
-    description = "Forward ports to the lima-hostagent";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "network.target" ] ;
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${/. + "${LIMA_CIDATA_MNT}/lima-guestagent"} daemon";
-      Restart = "on-failure";
+  boot = {
+    kernelModules = [ "tcp_bbr" ];
+
+    kernel.sysctl = {
+      "kernel.unprivileged_userns_clone" = 1;
+      "net.ipv4.ping_group_range" = "0 2147483647";
+      "net.ipv4.ip_unprivileged_port_start" = 0;
+      "net.ipv4.tcp_min_snd_mss" = 536;
+      "net.ipv4.tcp_congestion_control" = "bbr";
     };
-  };
-
-
-  boot.kernelModules = [ "tcp_bbr" ];
-
-  boot.kernel.sysctl = {
-    "kernel.unprivileged_userns_clone" = 1;
-    "net.ipv4.ping_group_range" = "0 2147483647";
-    "net.ipv4.ip_unprivileged_port_start" = 0;
-    "net.ipv4.tcp_min_snd_mss" = 536;
-    "net.ipv4.tcp_congestion_control" = "bbr";
   };
 
   users.users."${LIMA_CIDATA_USER}" = {

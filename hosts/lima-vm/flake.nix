@@ -8,19 +8,10 @@
   };
   outputs = { self, nixpkgs, nixos-generators, ... }: {
     packages.x86_64-linux = {
-      default = nixos-generators.nixosGenerate {
+      box = nixos-generators.nixosGenerate {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         modules = [
-          ./configuration.nix
-        ];
-        format = "raw-efi";
-      };
-    };
-    packages.aarch64-linux = {
-      box = nixos-generators.nixosGenerate {
-        pkgs = nixpkgs.legacyPackages.aarch64-linux;
-        modules = [
-          ./configuration.nix
+          ./lima-box.nix
         ];
         format = "raw-efi";
       };

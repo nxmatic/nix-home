@@ -1,10 +1,10 @@
-{ config, modulesPath, pkgs, lib, enableLimaRuntime ? true, ... }:
+{ config, modulesPath, pkgs, lib, ... }:
 
 let
     LIMA_CIDATA_MNT = "/mnt/lima-cidata";  # FIXME: hardcoded
     LIMA_CIDATA_DEV = "/dev/disk/by-label/cidata";  # FIXME: hardcoded
 
-    self_path = "${./.}";
+    self_path = "${./../..}";
       
     script = ''
     set -eux
@@ -21,11 +21,9 @@ let
         exit 2
     fi
 
-    cp -f ${self_path}/configuration.nix \
-          ${self_path}/lima-*.nix /etc/nixos && \
-       chmod 664 /etc/nixos/*.nix
+    ${pkgs.rsync}/bin/rsync -av ${self_path}/. /etc/nixos/.
 
-    nixos-rebuild switch
+    nixos-rebuild switch 
 
     cp "${LIMA_CIDATA_MNT}"/meta-data /run/lima-ssh-ready
     cp "${LIMA_CIDATA_MNT}"/meta-data /run/lima-boot-done

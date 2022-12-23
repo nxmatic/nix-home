@@ -1,0 +1,2 @@
+[lima-init]
+imports=[ "/etc/nixos/lima-runtime.nix" ]
