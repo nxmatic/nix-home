@@ -12,10 +12,11 @@ in {
   home = {
 
     sessionVariables = {
-      EDITOR = "${pkgs.emacs}/bin/emacs";
+      EDITOR = "${pkgs.emacs-nox}/bin/emacs";
     };
 
     packages = [
+      pkgs.emacs-nox
       pkgs.zsh
     ];
 
