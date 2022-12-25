@@ -210,6 +210,7 @@
             # it could just be left to the developer to determine what's
             # appropriate. after all, configuring these hm users is one of the
             # first steps in customizing the template.
+            root = { suites, ... } : { imports = suites.base ++ [ ./users/root/home.nix ]; };
             nixos = { suites, ... } : { imports = suites.base ++ [ ./users/nixos/home.nix ]; };
             darwin = { suites, ... } : { imports = suites.base; };
           }; # digga.lib.importers.rakeLeaves ./users/hm;
