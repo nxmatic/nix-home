@@ -1,5 +1,6 @@
 {
   hmUsers,
+  pkgs,
   ...
 } : {
   home-manager.users = {inherit (hmUsers) nixos;};
@@ -9,5 +10,6 @@
     description = "default";
     isNormalUser = true;
     extraGroups = ["wheel"];
+    shell = pkgs.zsh;
   };
 }

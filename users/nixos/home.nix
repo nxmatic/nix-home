@@ -9,6 +9,7 @@ let
   xdg = config.home-manager.users.nixos.xdg;
 in {
 
+
   home = {
 
     sessionVariables = {
