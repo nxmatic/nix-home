@@ -147,8 +147,8 @@
               };
             suites = with profiles; rec {
               base = [ core.nixos users.nixos users.root ];
-              home = base ++ [ profiles.home ];
-              lima = home ++ [ profiles.lima ];
+#             home = base ++ [ profiles.home ];
+              lima = base ++ [ profiles.lima ];
             };
           };
         };
