@@ -1,13 +1,5 @@
 {suites, profiles, modulesPath, pkgs, ...}: {
   imports = suites.lima
-            ++
-            [
-              (modulesPath + "/profiles/headless.nix")
-              (modulesPath + "/profiles/qemu-guest.nix")
-              # profiles.home
-              # profiles.lima.lima-configuration
-              # profiles.lima.lima-init
-            ]
   ;
 
   # system boot

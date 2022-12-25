@@ -22,7 +22,6 @@ let
     fi
 
     ${pkgs.rsync}/bin/rsync -av ${self_path}/. /etc/nixos/.
-
     nixos-rebuild switch 
 
     cp "${LIMA_CIDATA_MNT}"/meta-data /run/lima-ssh-ready

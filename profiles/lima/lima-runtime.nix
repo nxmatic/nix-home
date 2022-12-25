@@ -92,7 +92,7 @@ in {
 
     services = {
 
-      lima-runtime-init = {
+      lima-runtime = {
         inherit script;
         description = "Reconfigure the system from lima-runtime userdata on startup";
         
