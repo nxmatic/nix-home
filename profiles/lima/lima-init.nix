@@ -44,7 +44,6 @@ in {
     hostctl    # better to isolate extended hosts in profiles (todo)
     git        # nix requires git
     cntr       # enable breakpointHook later
-    emacs-nox  # emacs friendly user require it (should consider introducing an option, ie: vim instead)
   ];
   
   systemd.services.lima-init = {

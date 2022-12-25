@@ -31,6 +31,7 @@ in {
       curl
       direnv
       dnsutils
+      emacs-nox  # emacs friendly user require it (should consider introducing an option, ie: vim instead)
       fd
       git
       bottom
