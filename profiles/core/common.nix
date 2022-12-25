@@ -38,8 +38,8 @@ in {
       moreutils
       nix-index
       nmap
-      ripgrep
-      skim
+      #ripgrep
+      #skim
       tealdeer
       whois
     ];
