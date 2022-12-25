@@ -3,12 +3,7 @@
   pkgs,
   lib,
   ...
-} @inputs:
-with lib;
-let
-  xdg = config.home-manager.users.nixos.xdg;
-in {
-
+} @inputs: with lib; {
 
   home = {
 
@@ -23,7 +18,9 @@ in {
 
   };
 
-  xdg.enable = true;
+  xdg = {
+    enable = true;
+  };
 
   programs.home-manager = {
     enable = true;

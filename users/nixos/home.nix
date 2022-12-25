@@ -6,9 +6,8 @@
 } @inputs:
 with lib;
 let
-  xdg = config.home-manager.users.nixos.xdg;
+  homeDirectory = config.home.homeDirectory;
 in {
-
 
   home = {
 
@@ -21,9 +20,16 @@ in {
       pkgs.zsh
     ];
 
+    file."nixos-home-rc" = {
+      source = ./rc.zsh;
+      target = ".zshrc.d/nix-home.zsh";
+    };
+
   };
 
-  xdg.enable = true;
+  xdg = {
+    enable = true;
+  };
 
   programs.home-manager = {
     enable = true;
@@ -39,37 +45,30 @@ in {
       theme = "robbyrussell";
     };
 
+    initExtra = ''
+    # load extends rc files
+    for file in ~/.zshrc.d/*.zsh; do source ''${file}; done
+    '';
+
   };
 
-    # home-manager = {
-    #   programs.home-manager.enable = true;
+  systemd.user.services.nixos-home-rc = {
 
-    #   xdg = {
-    #     enable = true;
-    #     configFile = {
-    #       "nixpkgs" = {
-    #         text = ''
-    #         programs.zsh = {
-    #           enable = true;
-    #           history = {
-    #             size = 10000;
-    #             path = "${config.xdg.dataHome}/zsh/history";
-    #           };
-    #         };
-    #         '';
-    #       };
-    #     };
-    #   };
+    Unit = {
+      Description = "Setup nixos-home on host";
+    };
+    
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
 
-    #   programs = {
-    #     zsh = {
-    #       oh-my-zsh = {
-    #         enable = true;
-    #         plugins = [ "git" "thefuck" ];
-    #         theme = "robbyrussell";
-    #       };
-    #     };
-    #   };
-    # };
+    Service = {
+      User = "nixos";
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart =  "${pkgs.zsh}/bin/zsh ${config.home.homeDirectory}/.zshrc.d/nixos-home.zsh";
+    };
+    
+  };
 
-  }
+}

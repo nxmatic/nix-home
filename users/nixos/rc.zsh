@@ -1,11 +1,11 @@
 #!/usr/bin/env zsh
 
-alias nixsh="env PS1=\"nixsh> \" GIT_WORK_TREE=\"\${NIXOSHOME}\" GIT_DIR=\"\${NIXOSHOME}/.nixos-home.git\" zsh -d -f"
+alias nixsh="env PS1=\"nixsh> \" GIT_WORK_TREE=\"\${NIXOSHOME}\" GIT_DIR=\"\${HOME}/.nixos-home.git\" zsh --no-rcs --no-globalrcs"
 
-# Installation script (Bash) for https://github.com/nxmatic/nixos-home
+# Installation script (zsh) for https://github.com/nxmatic/nixos-home
 
 if [ -z "${NIXOSHOME}" ]; then
-    export NIXOSHOME=$(realpath /etc/nixos)
+    export NIXOSHOME=$(realpath --canonicalize-missing ~/.config/nixos)
 fi
 
 setopt aliases
@@ -14,7 +14,8 @@ setopt aliases
 
 nixsh <<EOF
 if [ ! -d "\${GIT_DIR}" ]; then
-    tmpfile=\$(mktemp -d ~${NIXOSHOME}/$(basename $0).XXXXX) && trap 0 "rm -fr \$tmpfile"
+    mkdir -p \${NIXOSHOME}
+    tmpfile=\$(mktemp -d ${NIXOSHOME}/$(basename $0).XXXXX) && trap "rm -fr \$tmpfile" 0
 
     git clone --quiet --bare https://github.com/nxmatic/nixos-home "\$GIT_DIR" 
     git ls-tree -r HEAD | awk '{print \$NF}' > \$tmpfile/ls-tree

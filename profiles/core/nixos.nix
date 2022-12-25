@@ -9,18 +9,29 @@
     ./common.nix
   ];
 
+  
   nix = {
+
+    # This is just a representation of the nix default
     settings = {
-      # This is just a representation of the nix default
       system-features = ["nixos-test" "benchmark" "big-parallel" "kvm"];
       # Improve nix store disk usage
       auto-optimise-store = true;
       allowed-users = ["@wheel"];
     };
+
     optimise.automatic = true;
   };
 
   environment = {
+
+    # Install current system configuration
+    etc = {
+      "nixos" = {
+        source = ../..;
+      };
+    };
+
     # Selection of sysadmin tools that can come in handy
     systemPackages = with pkgs; [
       dosfstools
