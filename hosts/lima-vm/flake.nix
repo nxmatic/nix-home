@@ -1,15 +1,10 @@
 {
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-22.11";
-    nixos-generators = {
-      url = "github:nix-community/nixos-generators";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
-  outputs = { self, nixpkgs, nixos-generators, ... }: {
+  outputs = { self, nixpkgs, ... }: {
     packages.x86_64-linux = {
-      box = nixos-generators.nixosGenerate {
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      box = nixpkgs.legacyPackages.x86_64-linux.nixosGenerate {
         modules = [
           ./lima-box.nix
         ];
